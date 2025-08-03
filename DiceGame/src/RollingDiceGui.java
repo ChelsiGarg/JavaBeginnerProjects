@@ -68,7 +68,7 @@ public class RollingDiceGui extends JFrame{
                                 revalidate();
 
                                 // sleep thread
-                                Thread.sleep(60);
+                                Thread.sleep(6);
 
                                 endTime=System.currentTimeMillis();
                                 }
