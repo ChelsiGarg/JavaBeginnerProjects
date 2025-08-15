@@ -1,6 +1,5 @@
 # Java Sound API & Audio Playback - Q&A Reference
 
-## 1. `playSound` Method Explanation
 **Question:** Explain the `playSound` method.
 
 **Answer:**  
@@ -15,109 +14,50 @@ public void playSound(String[] morseMessage) throws LineUnavailableException {
 }
 ```
 - **AudioFormat** → Defines sample rate, bits per sample, channels, signed/unsigned, endianness.
-- **DataLine.Info** → Specifies desired line type (playback vs record) and format.
-- **AudioSystem.getLine** → Requests a matching line from the system.
-- **SourceDataLine** → A type of DataLine for playback.
-- **open/start** → Prepare and start the line.
+- **DataLine.Info** → DataLine.Info is like a request form telling the system:  
+&nbsp;&nbsp;&nbsp;&nbsp;- "I need a SourceDataLine (a type of line used to play audio, not record it)."  
+&nbsp;&nbsp;&nbsp;&nbsp;- "It must support the format I just described (audioFormat)."
+- **AudioSystem.getLine(...)**
+&nbsp;&nbsp;&nbsp;&nbsp;- Requests a line from the system. This line should have all requirements captured in ataLineInfo. 
+&nbsp;&nbsp;&nbsp;&nbsp;- We typecasted this line to SourceDataLine because SourceDataLine can send raw audio data to speakers).
+&nbsp;&nbsp;&nbsp;&nbsp;- We cast it to SourceDataLine because getLine returns the generic Line interface. 
+- **sourceDataLine.open(audioFormat)**
+&nbsp;&nbsp;&nbsp;&nbsp;- Opens the audio line with your chosen audioFormat. 
+&nbsp;&nbsp;&nbsp;&nbsp;- This reserves system resources and gets the line ready to accept sound data.
+- **sourceDataLine.start()**
+&nbsp;&nbsp;&nbsp;&nbsp;- Starts the line — now it’s actively ready to play any audio data you send to it.
+
+Real-life analogy
+• AudioFormat = the “rules” for how the song will be played (tempo, pitch range, mono/stereo).  
+• DataLine.Info = filling out a request form for the sound system saying “I want a speaker line that plays with these rules.”  
+• getLine(...) = the sound system gives you the actual speaker connection based on your requirements.  
+• open(...) = plugging in and setting the audio format.  
+• start() = turning the speaker on, waiting for you to send music.
 
 ---
 
-## 2. Why Pass `dataLineInfo` and Typecast
-**Question:** Why did we pass `dataLineInfo` and later typecast to `SourceDataLine`?
-
-**Answer:**
-- `dataLineInfo` describes the type and format of line you want.
-- `getLine` returns a generic `Line` type.
-- Typecasting to `SourceDataLine` is necessary to use playback-specific methods like `write()`.
-
-**Analogy:** Tool rental shop — `dataLineInfo` is your request form, casting is you saying “I know this tool is a drill, let me use it as a drill.”
-
----
-
-## 3. `playBeep` Method Explanation
 **Question:** Explain the `playBeep` method.
 
-**Answer:**
-- Creates a byte array sized for given duration at 44100 samples/sec.
-- Loops to fill array with sine wave data for a 440 Hz tone.
+**Answer:** This method is where the actual sound gets generated and sent to the speakers.
+- Creates a byte array (that will hold the sound waveform data) sized for given duration(dot, dash or slash) at 44100 samples/sec.
+- Loops over every audio sample to fill array with sine wave data for a 440 Hz tone. We are manually creating the waveform.
 - Writes this data to the `SourceDataLine` for playback.
 
 ---
 
-## 4. Audio Samples per Second
 **Question:** What does “audio samples per second” signify?
 
 **Answer:**
-- Number of times per second the amplitude of the sound wave is measured.
+- Number of times per second the amplitude (or value) of the sound wave is measured.
 - Higher sample rate → more accurate representation of sound.
 - 44,100 samples/sec (44.1 kHz) = CD quality.
-- Governed by Nyquist Theorem.
-
-**Analogy:** Like video frame rate — higher FPS = smoother motion.
 
 ---
 
 ## 5. Visual Example of Sampling Rates
 **Answer:** 44.1 kHz captures the waveform smoothly, 8 kHz produces a jagged approximation.
+<img width="1947" height="980" alt="image" src="https://github.com/user-attachments/assets/5812d1a1-57ee-4918-9a33-2e5290ebef0f" />
 
 ---
 
-## 6. Shutdown Sequence
-**Question:** Explain `drain()`, `stop()`, `close()`.
-
-**Answer:**
-- **drain()** → Wait until all data in buffer is played.
-- **stop()** → Stop playback (can be restarted if not closed).
-- **close()** → Release resources (cannot be restarted).
-
----
-
-## 7. Why Use a Separate Thread for Audio
-**Question:** Why run audio in another thread and why does it still run after `actionPerformed` returns?
-
-**Answer:**
-- Prevents blocking the Event Dispatch Thread (UI remains responsive).
-- `start()` schedules `run()` on a separate thread — continues even after `actionPerformed` finishes.
-
----
-
-## 8. Who Calls `run()`?
-**Answer:**
-- `start()` tells JVM to create a new thread and call `run()` internally.
-- Calling `run()` directly runs it on the current thread (no parallelism).
-
----
-
-## 9. Why Only Check for SHIFT Key
-**Question:** Why not check for Caps Lock, Tab, etc.?
-
-**Answer:**
-- SHIFT is pressed often during typing → avoiding unnecessary updates is important.
-- Other keys are rarely pressed and the cost is negligible.
-
----
-
-## 10. Java Sound API Definition
-**Question:** Is this implementation using Java Sound API, and what is it?
-
-**Answer:**
-- Yes — uses `javax.sound.sampled` package.
-- Built-in Java library for playing, recording, and processing audio.
-- No extra dependencies needed.
-
----
-
-## 11. Markdown Table Example
-```md
-| Feature    | JTextArea                      | JTextPane                               |
-|------------|--------------------------------|------------------------------------------|
-| Purpose    | Simple multi-line text display/edit | Rich text editing & formatting          |
-| Formatting | Plain text only                | Supports bold, italic, colors, fonts, styles |
-```
-
----
-
-## 12. Spelling
-**Question:** Spelling of "miscellaneous"?  
-**Answer:** miscellaneous ✅
 
