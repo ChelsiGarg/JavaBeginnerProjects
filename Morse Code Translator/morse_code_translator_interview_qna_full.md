@@ -63,7 +63,7 @@
 &nbsp;&nbsp;&nbsp;- If true, long lines will continue on the next line instead of extending horizontally and requiring a scroll bar.
 
 &nbsp;&nbsp;setWrapStyleWord(boolean true/false)  
-&nbsp;&nbsp;&nbsp;- Works only when line wrap is enabled.
+&nbsp;&nbsp;&nbsp;- Works only when line wrap is enabled.  
 &nbsp;&nbsp;&nbsp;- Prevents splitting words (words in boundary of a line) in half.
 
 **Q:** Difference between JTextArea and JTextPane  
@@ -81,10 +81,10 @@ Analogy
 **A:** The JTextArea is attached to a KeyListener. So, on every key release, `keyReleased()` function is invoked which internally calls other functions to translate entire input text to Morse and update the output area, ignoring shift key presses.
 
 **Q:** Why you explicitly ignored shift key presses in your logic? Why other special keys like capsLock, tab are not handled?  
-**A:** Shift is a modifier key that:
-- Does not insert any character itself.
-- Is often pressed together with a letter key to change its case.
-- Would otherwise cause an unnecessary extra call to translateToMorse(...) when it’s released.
+**A:** Shift is a modifier key that:  
+&nbsp;&nbsp;&nbsp;- Does not insert any character itself.  
+&nbsp;&nbsp;&nbsp;- Is often pressed together with a letter key to change its case.  
+&nbsp;&nbsp;&nbsp;- Would otherwise cause an unnecessary extra call to translateToMorse(...) when it’s released.
 
 Caps Lock, Tab, etc. will also trigger `keyReleased()` and cause the UI to update, but they’re pressed so infrequently compared to Shift that the extra UI update is negligible.
 
@@ -107,9 +107,11 @@ Caps Lock, Tab, etc. will also trigger `keyReleased()` and cause the UI to updat
 
 **Q:** How do you generate sound in your Morse Code Translator project?  
 **A:** I use Java’s javax.sound.sampled API. Specifically:
-- I define an AudioFormat (sample rate, bit depth, channels, signed/unsigned, endian).
+- I define an AudioFormat (sample rate, bit depth, channels, signed/unsigned, endian).  
+  &nbsp;&nbsp;- Real life analogy: the “rules” for how the song will be played
 - I open a SourceDataLine to send generated audio data to the speaker.
-- For each Morse code symbol (dot/dash), I generate a sine wave in a byte array and write it to the audio line.
+- For each Morse code symbol (dot/dash), I generate a sine wave in a byte array and write it to the audio line.  
+  &nbsp;&nbsp;- Writing beeps for the Morse code into the line actually generates the audio to be played
 
 **Q:** Why did you choose SourceDataLine instead of Clip?  
 **A:** Clip is better suited for short pre-recorded sounds. In my case, I’m generating tones dynamically which makes SourceDataLine more appropriate because it allows real-time streaming of generated audio samples.
@@ -142,15 +144,15 @@ Caps Lock, Tab, etc. will also trigger `keyReleased()` and cause the UI to updat
 ### **Timing & Threading**
 
 **Q:** How do you handle timing between dots, dashes, and letters?  
-**A:** - After playing each tone, I call Thread.sleep(dotDuration) to create silence.
-&nbsp;&nbsp;&nbsp;- Between Morse code letters, I also sleep for dotDuration.
+**A:** - After playing each tone, I call Thread.sleep(dotDuration) to create silence.  
+&nbsp;&nbsp;&nbsp;- Between Morse code letters, I also sleep for dotDuration.  
 &nbsp;&nbsp;&nbsp;-Slashes / in the Morse string indicate spaces, where I sleep for slashDuration (longer pause).
 
 **Q:** Why do you play the sound in a separate thread?  
 **A:** This is mainly because Java Swing runs on the Event Dispatch Thread (EDT) — the special thread responsible for:  
 &nbsp;&nbsp;- Handling button clicks, key presses, etc.  
 &nbsp;&nbsp;- Painting the UI.  
-Playing audio and sleeping for timing would block the EDT for that whole time.
+Playing audio and sleeping for timing would block the EDT for that whole time.  
 Result:  
 &nbsp;&nbsp;- The UI freezes (buttons stop responding, window can’t redraw).  
 &nbsp;&nbsp;- The user thinks the app is “not responding”.
@@ -164,19 +166,25 @@ By starting a separate thread:
 
 **Q:** How do you handle audio resource cleanup?  
 **A:** I call:  
-&nbsp;&nbsp;&nbsp;- sourceDataLine.drain(); -> ensures all queued audio is played before closing.
-&nbsp;&nbsp;&nbsp;- sourceDataLine.stop(); -> Stops the line from playing or accepting any more data.
-&nbsp;&nbsp;&nbsp;- sourceDataLine.close(); -> Releases all system resources associated with the line.
+&nbsp;&nbsp;&nbsp;- sourceDataLine.drain(); -> ensures all queued audio is played before closing.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• Without drain(), if you stopped the line immediately, the tail end of your sound could get cut off.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• Analogy → Imagine a coffee machine: you wait for the last drops to drip out before turning it off.  
+&nbsp;&nbsp;&nbsp;- sourceDataLine.stop(); -> Stops the line from playing or accepting any more data.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• After stop(), you can still restart it later with .start() if needed (as long as it’s not closed yet).  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• Analogy → This is like hitting the “pause” button on a music player — it stops playback but doesn’t throw the player away.  
+&nbsp;&nbsp;&nbsp;- sourceDataLine.close(); -> Releases all system resources associated with the line.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• After calling close(), you can’t use the line again — you’d have to open a new one.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• Analogy → This is like unplugging your music player and putting it back in the box.
 
 **Q:** What exceptions must be handled for audio playback?  
 **A:** - LineUnavailableException – if the system audio line is in use or unavailable.  
 &nbsp;&nbsp;&nbsp;- InterruptedException – from Thread.sleep() if playback is interrupted.
 
 **Q:** What happens if the user clicks "Play Sound" multiple times quickly?  
-**A:** I disable the button during playback to avoid overlapping sounds and re-enable it after playback finishes.
+**A:** I disable the button during playback to avoid overlapping sounds and re-enable it after playback finishes. This assures that beeps do not get restarted again & again on multiple clicks.
 
 **Q:** What frequency and duration did you use for Morse code tones?  
-**A:** A fixed frequency (e.g., 400Hz) for dots and dashes, with dots having shorter durations (~200ms) and dashes longer (~600ms).
+**A:** A fixed frequency (400Hz) for dots and dashes, with dots having shorter durations (~200ms) and dashes longer (~300ms).
 
 ---
 
@@ -203,13 +211,13 @@ Java technologies for web:
 - JSP/Servlets  
 - Spring MVC  
 - Jakarta EE  
-- Thymeleaf (template engine)
+- Thymeleaf (template engine)  
 These can generate HTML directly from the server and send it to the browser.
 
 Why we still need React or other frontend frameworks  
 Even though Java can create web pages:  
 - Modern apps need dynamic, interactive UIs without reloading the page — React handles this with the Virtual DOM.  
-- React makes state management easier (data changes auto-update UI).
+- React makes state management easier (data changes auto-update UI).  
 - Java-based HTML rendering causes full page reloads on updates — slower user experience.
 
 Separation of concerns:  
