@@ -1,18 +1,10 @@
-## Getting Started
+### Morse Code Translator – Java Swing Application
+Skills & Technologies:
+Java, Swing, Java Sound API, Event Handling (KeyListener, ActionListener), MVC Design Pattern, Multithreading, UI/UX Design  
+• Built a desktop app for real-time English-to-Morse translation with synchronized text & audio output.  
+• Integrated Java Sound API to generate distinct dot/dash tones for authentic Morse code playback.  
+• Implemented KeyListener for instant UI updates while typing.  
+• Designed MVC architecture separating GUI, translation logic, and audio control.  
+• Enhanced UX with word-aware text wrapping and customized Swing components.  
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
-
-## Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+The project is built with the help of [link](https://www.youtube.com/watch?v=ydSJrHUhbOw&t=8933s)
