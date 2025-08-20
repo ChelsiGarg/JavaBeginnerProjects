@@ -34,7 +34,33 @@ This separation follows the principle of **modularity**. Each class has a single
 - **Collections**: `HashMap` for category-to-words mapping, `ArrayList` for category selection.  
 - **I/O**: `BufferedReader` + `FileReader` to read words from a file.  
 - **Utility methods**: static helper functions (`CustomTools`).  
-- **Constants management**: centralized config (`CommonConstants`).  
+- **Constants management**: centralized config (`CommonConstants`).
+
+**Q4. Explain OOP concepts used in your project.**  
+**A:**  
+1. `Encapsulation`  
+Meaning: Wrapping data (fields) and behavior (methods) together, restricting direct access to internals (data hiding).  
+In my Code:
+- WordDB encapsulates the HashMap<String, String[]> wordList and ArrayList<String> categories.  
+   - These are private, so outside classes can’t directly modify them.  
+   - Instead, access is controlled via the loadChallenge() method.
+
+2. `Abstraction`
+Meaning: Hiding implementation details and exposing only the essential functionality (implementation hiding).  
+In my Code:
+- `CustomTools.createFont(String resource)` hides the internal details of reading a font file, decoding %20, and creating a Font.  
+To the user of this method, it’s just “give me a font”.  
+- `CustomTools.hideWords()` hides the character-by-character replacement logic — you just pass in a word, and it gives you a masked string.    
+
+3. `Inheritance`  
+Meaning: One class acquiring properties and behaviors of another.  
+In my Code, I didn’t explicitly create custom subclasses, but I leveraged inheritance heavily:
+- JFrame, JLabel, JButton → all inherit from Swing’s component hierarchy.
+- `Hangman extends JFrame` → this means Hangman inherits all the functionality of a Swing JFrame (like window creation, layout handling, event management).
+
+4. `Polymorphism`  
+Meaning: Ability to use the same method/behavior in different forms.  
+In my code, I haven't used this concept
 
 ---
 
@@ -56,7 +82,7 @@ Implementing `ActionListener` allows the same class to handle all button events 
 ---
 
 **Q3. What does `setModal(true)` do in your `resultDialog`?**  
-**A:** It makes the dialog **block input** to other windows until closed, ensuring the player responds before continuing.  
+**A:** It makes the dialog **block input** to other windows until closed, ensuring the player responds to the dialog window.  
 
 ---
 
@@ -108,6 +134,62 @@ So overall challenge loading is constant time.
 
 **Q1. Why are all methods static?**  
 **A:** Because `CustomTools` is a utility class. It doesn’t hold state, so making methods static avoids creating unnecessary objects.  
+&nbsp;&nbsp;&nbsp;Below is detailed explanation:  
+&nbsp;&nbsp;&nbsp;👉 Example: Math class in Java:
+```
+Math.sqrt(25);
+Math.max(5, 9);
+```
+
+You don’t need to create an object like:
+```
+Math m = new Math(); // unnecessary
+m.sqrt(25);
+```
+
+2. Why Static Methods?  
+A static method belongs to the class itself, not to an object.  
+You can call it directly using the class name:
+```
+CustomTools.loadImage("path.png");
+```
+
+If methods were non-static, you’d need to create an object first:
+```
+CustomTools tools = new CustomTools();
+tools.loadImage("path.png");
+```
+
+But since the object doesn’t store any useful information, creating it is wasteful.
+
+3. Real-Life Analogy
+Think of a calculator app:  
+Functions: add, subtract, multiply.  
+You don’t create a new calculator each time you add numbers.  
+Instead, you just use it directly:
+```
+Calculator.add(2, 3); // → 5
+```
+If you had to create a new calculator object every time, it would be pointless because the calculator has no memory/state—it just computes results.
+
+That’s why the methods are static → they act like global tools.
+
+4. Why Not Always Use Static?  
+If a class needs to remember state (like a BankAccount with balance), methods should not be static.
+Example:
+```
+BankAccount account = new BankAccount(1000);
+account.withdraw(200); // affects this account's balance
+```
+Here, withdraw depends on the account’s state.
+
+So:
+Utility classes → use static methods.
+Stateful classes → use instance methods.
+
+✅ Final Takeaway  
+Since CustomTools is only a helper toolbox (no data inside it), making its methods static avoids wasting memory by creating unnecessary objects.
+
 
 ---
 
@@ -118,8 +200,8 @@ So overall challenge loading is constant time.
 
 ---
 
-**Q3. Why use `String += "*"` in `hideWords` instead of `StringBuilder`?**  
-**A:** This is a simpler implementation. However, using `StringBuilder` is more efficient because strings are immutable in Java.  
+**Q3. Why did you use `StringBuilder` instead of `String` to append characters?**  
+**A:** I chose to use `StringBuilder` instead of `String` because String objects in Java are immutable. This means that every time I append a character to a String, a new object is created in memory, which is inefficient when dealing with frequent modifications. On the other hand, StringBuilder is mutable, so it can modify the same underlying object without creating new ones. This makes it much more efficient for operations like appending, inserting, or deleting character.
 
 ---
 
@@ -151,37 +233,27 @@ So overall challenge loading is constant time.
 ## 🔹 Section 3: Advanced/Extension Questions
 
 **Q1. How would you add difficulty levels (easy/medium/hard)?**  
-**A:** Add metadata in `data.txt` (like tags), or use separate files for each difficulty. Modify `WordDB` to load based on selected difficulty.  
+**A:** Add metadata in `data.txt` (like tags for different levels), or use separate files for each difficulty. Modify `WordDB` to load based on selected difficulty.  
 
 ---
 
 **Q2. How would you implement multiplayer mode?**  
-**A:** Allow two players to take turns guessing. Track scores separately. Could be done via socket programming (network multiplayer) or local turns.  
+**A:** I would start with a local multiplayer mode, where two players take turns guessing. I’d maintain separate scores and alternate turns after each guess, ensuring fair play. For future enhancement, this could be extended to online multiplayer using socket programming or networking concepts once I gain more experience with them.
 
 ---
 
-**Q3. How would you persist game state?**  
-**A:** Store current word, guessed letters, and incorrect guesses in a file or database. On restart, load them back.  
+**Q3. Explain local vs online multiplayer mode.**  
+**A:** `Local multiplayer mode`: Local multiplayer mode means two or more players play on the same device by taking turns or sharing controls. In my project, it would work as a turn-based system where each player guesses alternately and their scores are tracked separately.
+
+`Online multiplayer mode'`: Online or network multiplayer means players connect from different devices over the internet or a network. The game uses socket programming or networking to sync turns, actions, and scores between players in real time.
 
 ---
 
 **Q4. How would you scale to millions of words?**  
-**A:**  
-- Use lazy loading or streaming from disk instead of loading all into memory.  
+**A:**    
 - Use a database for faster querying.  
 - Apply caching for frequently used categories.  
 
 ---
 
-**Q5. How would you make it thread-safe for multiple players?**  
-**A:** Synchronize access to `WordDB` and shared resources. Use `ConcurrentHashMap` if multiple threads access the word list.  
-
----
-
-## 🔹 Section 4: Real-life Analogies
-
-1. **Hangman UI** = A **quiz host** showing blanks and letters to players.  
-2. **WordDB** = A **dictionary in a library**, categories = shelves, words = books.  
-3. **CustomTools.hideWords** = Covering letters with **post-it notes** until revealed.  
-4. **Incorrect guesses updating image** = A **health bar** depleting in a video game.  
-5. **CommonConstants** = A **style guide in a company**, ensuring consistency across everything.  
+ 
