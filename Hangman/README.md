@@ -1,18 +1,11 @@
-## Getting Started
+### 🎮 Hangman Game (Java, Swing)  
+Developed a desktop-based Hangman game using **Java Swing** with a focus on modular design, OOP principles, and an engaging user interface.  
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+- Built an **interactive GUI** using Swing, handling events and user inputs efficiently.  
+- Designed a **modular architecture** with helper classes (`WordDB`, `CustomTools`, `CommonConstants`) demonstrating **encapsulation and abstraction**.  
+- Applied **OOP principles**: inheritance (`JFrame`), encapsulation (data handling), and abstraction (helper utilities).  
+- Implemented **file-based word storage** using `BufferedReader`, `HashMap`, and `ArrayList` for efficient category/word management.  
+- Enhanced UI/UX with **custom fonts, images, and color schemes**, showcasing resource handling and GUI customization in Java.  
 
-## Folder Structure
 
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Useful [resources](https://www.youtube.com/watch?v=ydSJrHUhbOw&t=12219s)
